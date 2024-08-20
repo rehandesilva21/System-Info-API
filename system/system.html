@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Usage Monitor</title>
+   <style>
+   @font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-thin-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-thin-webfont.woff') format('woff');
+	font-weight: 100;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-extralight-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-extralight-webfont.woff') format('woff');
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-light-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-light-webfont.woff') format('woff');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-regular-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-regular-webfont.woff') format('woff');
+	font-weight: 400; 
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-medium-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-medium-webfont.woff') format('woff');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-semibold-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-semibold-webfont.woff') format('woff');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-bold-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-bold-webfont.woff') format('woff');
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-extrabold-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-extrabold-webfont.woff') format('woff');
+	font-weight: 800;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Montserrat';
+	src: url('fonts/montserrat-black-webfont.woff2') format('woff2'),
+		 url('fonts/montserrat-black-webfont.woff') format('woff');
+	font-weight: 900;
+	font-style: normal;
+}
+
+
+body {
+    font-family: 'Montserrat';
+    background-color: transparent;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 110vh;
+}
+
+.container {
+    background-color: transparent;
+    margin-top: -10vh;
+   
+    
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 6vmin;
+}
+
+#system-info p {
+    font-size: 4vmin;
+    margin: 10px 0;
+    padding-top: 2vmin;
+}
+
+
+.graph-container {
+    margin-top: 20px;
+}
+
+.graph {
+    margin: 10px 0;
+}
+
+
+
+</style>
+</head>
+<body>
+    <div class="container">
+        
+        <div id="system-info">
+            <p><strong>Processor Name:</strong> <span id="processor-name"></span></p>
+            <p><strong>OS Version:</strong> <span id="os-version"></span></p>
+            <div class="graph-container">
+                
+                <div class="graph">
+                    <h3>Performance</h3>
+                    
+                    <canvas id="usageChart"></canvas>
+                </div>
+                <div class="graph">
+                    <h3>Network Usage </h3>
+                    <p>Bytes Sent: <span id="bytes-sent"></span> Bytes</p>
+                    <p>Bytes Received: <span id="bytes-recv"></span> Bytes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <script>
+        function updateSystemInfo() {
+            fetch('http://127.0.0.1:5100/api/system_info')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('processor-name').innerText = data.processor_name;
+                    document.getElementById('os-version').innerText = data.os_version;
+                    document.getElementById('cpu-bar').style.width = data.cpu_usage + '%';
+                    document.getElementById('ram-bar').style.width = data.ram_usage + '%';
+                    document.getElementById('bytes-sent').innerText = data.network_usage.bytes_sent;
+                    document.getElementById('bytes-recv').innerText = data.network_usage.bytes_recv;
+                });
+        }
+
+
+        setInterval(updateSystemInfo, 1000);
+        const ctx = document.getElementById('usageChart').getContext('2d');
+const usageChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['CPU Usage', 'RAM Usage'],
+        datasets: [{
+            label: 'System Performance',
+            data: [0, 0],
+            backgroundColor: ['#FEDC56', '#FFBF00'],
+        
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function updateSystemInfo() {
+    fetch('http://127.0.0.1:5100/api/system_info')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('processor-name').innerText = data.processor_name;
+            document.getElementById('os-version').innerText = data.os_version;
+            usageChart.data.datasets[0].data[0] = data.cpu_usage;
+            usageChart.data.datasets[0].data[1] = data.ram_usage;
+            usageChart.update();
+            document.getElementById('bytes-sent').innerText = data.network_usage.bytes_sent;
+            document.getElementById('bytes-recv').innerText = data.network_usage.bytes_recv;
+        });
+}
+
+    </script>
+</body>
+</html>
