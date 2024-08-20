@@ -7,7 +7,7 @@ app = Flask(__name__,template_folder='system')
 
 @app.route('/')
 def index():
-    return render_template('system.html')
+    return render_template('index.html')
 
 @app.route('/api/system_info', methods=['GET','POST'])
 def system_info():
