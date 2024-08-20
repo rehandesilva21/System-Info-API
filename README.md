@@ -17,3 +17,5 @@ This project is a simple Flask-based REST API that provides real-time system usa
 
   ```bash
   pip install flask psutil
+## Screenshot
+![image](https://github.com/user-attachments/assets/ada2a9e9-e584-43a7-95d5-24b7c3adcf56)
